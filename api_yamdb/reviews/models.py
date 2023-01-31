@@ -1,14 +1,13 @@
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-
-from api_yamdb.settings import USER_ROLES
+from django.db import models
 
 
 class User(AbstractUser):
     role = models.CharField(
         verbose_name='Пользовательская роль',
         max_length=16,
-        choices=USER_ROLES,
+        choices=settings.USER_ROLES,
         default='user'
     )
     bio = models.TextField(verbose_name='Биография', blank=True)

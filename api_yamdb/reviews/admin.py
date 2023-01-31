@@ -14,6 +14,12 @@ class UserAdmin(admin.ModelAdmin):
         'bio',
         'role',
     )
+    exclude = [
+        'last_login', 'is_staff',
+        'is_active', 'date_joined',
+        'groups', 'user_permissions',
+        'password'
+    ]
     search_fields = ('username',)
     list_filter = ('id',)
     empty_value_display = '-пусто-'
