@@ -22,3 +22,22 @@ class User(AbstractUser):
 class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.slug
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.slug
+
+
+class Title(models.Model):
+    name = models.CharField('Название', max_length=256)
+    year = models.IntegerField('Год выпуска')
+    description = models.TextField('Описание', blank=True, null=True)
+    genre = models.ManyToManyField(Genre)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL)
