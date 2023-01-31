@@ -104,9 +104,4 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
-USER_ROLES = (
-    ('1', 'user'),
-    ('2', 'moderator'),
-    ('3', 'admin'),
-)
 AUTH_USER_MODEL = 'reviews.User'
