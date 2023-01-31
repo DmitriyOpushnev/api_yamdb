@@ -105,3 +105,5 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 }
+
+LIMIT_EMAIL = 254
