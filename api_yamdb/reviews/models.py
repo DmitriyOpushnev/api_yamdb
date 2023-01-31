@@ -17,3 +17,8 @@ class User(AbstractUser):
         default='user'
     )
     bio = models.TextField(verbose_name='Биография', blank=True)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
