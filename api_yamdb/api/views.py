@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 from reviews.models import Category
 from api.serializers import CategorySerializer
 from rest_framework.permissions import AllowAny
@@ -17,3 +17,5 @@ class CategoryViewSet(ListCreateDelViewSet):
     serializer_class = CategorySerializer
     permission_classes = (AllowAny, )  # to be updated
     lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=name',)
