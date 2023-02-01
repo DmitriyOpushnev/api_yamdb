@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from reviews.models import Category, Genre, Title
 from api.serializers import (CategorySerializer, GenreSerializer,
-                             TitleSerializer, GetTitleSerializer)
+                             PostTitleSerializer, GetTitleSerializer)
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -31,11 +31,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.select_related('category').\
         prefetch_related('genre')
     safe_serializer_class = GetTitleSerializer
-    unsafe_serializer_class = TitleSerializer
+    unsafe_serializer_class = PostTitleSerializer
 
     permission_classes = (AllowAny, )  # to be updated
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('category', 'genre', 'name', 'year')
+    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

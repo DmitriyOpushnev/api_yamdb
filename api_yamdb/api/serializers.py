@@ -18,9 +18,7 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
-class GetTitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    genre = GenreSerializer(many=True)
+class AbstractTitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
     class Meta:
@@ -32,7 +30,12 @@ class GetTitleSerializer(serializers.ModelSerializer):
         return 9          #  ждем модель Review
 
 
-class TitleSerializer(GetTitleSerializer):
+class GetTitleSerializer(AbstractTitleSerializer):
+    category = CategorySerializer()
+    genre = GenreSerializer(many=True)
+
+
+class PostTitleSerializer(AbstractTitleSerializer):
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
