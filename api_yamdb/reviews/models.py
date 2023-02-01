@@ -53,19 +53,23 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    text = models.TextField()
+    text = models.TextField(verbose_name='text')
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE,
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='title',
+        related_name='reviews'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User, on_delete=models.CASCADE, verbose_name='author'
     )
     score = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        verbose_name='score'
     )
     pub_date = models.DateTimeField(
-        'Дата публикации отзыва', auto_now_add=True
+        auto_now_add=True, verbose_name='Дата публикации отзыва'
     )
 
     def __str__(self):
