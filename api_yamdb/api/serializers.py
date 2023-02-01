@@ -15,3 +15,10 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ('name', 'slug')
         lookup_field = 'slug'
+
+
+class TitleGetSerializer(serializers.ModelSerializer):  # похоже так
+    rating = serializers.IntegerField()
+
+    class Meta:
+        read_only_fields = ('rating',)
