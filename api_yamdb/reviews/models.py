@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import (
+    MaxValueValidator, MinValueValidator,)
 
 
 USER_ROLES = (
@@ -48,3 +50,23 @@ class Title(models.Model):
 
     class Meta:
         default_related_name = 'titles'
+
+
+class Review(models.Model):
+    text = models.TextField()
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+    )
+    score = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации отзыва', auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.text
