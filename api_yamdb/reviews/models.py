@@ -45,3 +45,6 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL
     )
+
+    class Meta:
+        default_related_name = 'titles'
