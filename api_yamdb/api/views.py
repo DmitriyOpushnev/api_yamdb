@@ -1,8 +1,9 @@
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
+from django.db.models import Avg
 
-from reviews.models import Category, Genre, Review
+from reviews.models import Category, Genre, Review, Title
 from api.serializers import (CategorySerializer, GenreSerializer,
                              CommentSerializers)
 from django.shortcuts import get_object_or_404
@@ -17,6 +18,9 @@ class ListCreateDelViewSet(mixins.CreateModelMixin,
     pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
+    queryset = Title.objects.annotate(  # не совсем уверен
+        rating=Avg('reviews__score')    # что правильно
+    ).order_by('-id')                   # но
 
 
 class CategoryViewSet(ListCreateDelViewSet):
