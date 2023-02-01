@@ -67,16 +67,19 @@ DATABASES = {
 }
 
 
-# еще разок моя фича, чтобы заметили:) только этим и горжусь:)
-
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.%s" % validator}
-    for validator in [
-        "UserAttributeSimilarityValidator",
-        "MinimumLengthValidator",
-        "CommonPasswordValidator",
-        "NumericPasswordValidator",
-    ]
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 
@@ -105,5 +108,3 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 }
-
-LIMIT_EMAIL = 254

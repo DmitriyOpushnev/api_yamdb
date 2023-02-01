@@ -36,9 +36,11 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField('Название', max_length=256)
-    year = models.IntegerField('Год выпуска')
-    description = models.TextField('Описание', blank=True, null=True)
+    name = models.CharField(verbose_name='Название', max_length=256)
+    year = models.IntegerField(verbose_name='Год выпуска')
+    description = models.TextField(
+        verbose_name='Описание', blank=True, null=True
+    )
     genre = models.ManyToManyField(Genre)
     category = models.ForeignKey(
         Category, null=True, on_delete=models.SET_NULL

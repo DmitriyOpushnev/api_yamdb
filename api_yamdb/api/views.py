@@ -1,8 +1,9 @@
-from rest_framework import viewsets, mixins, filters
+from rest_framework import filters, mixins, viewsets
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
+
 from reviews.models import Category
 from api.serializers import CategorySerializer
-from rest_framework.permissions import AllowAny
-from rest_framework.pagination import LimitOffsetPagination
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -13,7 +14,6 @@ class ListCreateDelViewSet(mixins.CreateModelMixin,
 
 
 class CategoryViewSet(ListCreateDelViewSet):
-    '''Viewset for Category: create, list, del - available for admin only '''
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (AllowAny, )  # to be updated
