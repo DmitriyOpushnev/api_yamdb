@@ -30,12 +30,12 @@ class AbstractTitleSerializer(serializers.ModelSerializer):
         return 9          #  ждем модель Review
 
 
-class GetTitleSerializer(AbstractTitleSerializer):
+class ReadTitleSerializer(AbstractTitleSerializer):
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
 
 
-class PostTitleSerializer(AbstractTitleSerializer):
+class WriteTitleSerializer(AbstractTitleSerializer):
     genre = serializers.SlugRelatedField(
         slug_field='slug', many=True, queryset=Genre.objects.all()
     )
@@ -52,3 +52,6 @@ class PostTitleSerializer(AbstractTitleSerializer):
                 'Год выпуска произведения не может быть больше текущего.'
             )
         return data
+
+    def to_representation(self, instance):
+        return ReadTitleSerializer(instance).data
