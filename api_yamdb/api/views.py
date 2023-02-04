@@ -8,7 +8,6 @@ from api.serializers import (CategorySerializer, GenreSerializer,
                              ReadTitleSerializer, ReviewSerializer, WriteTitleSerializer, CommentSerializers)
 
 
-
 class ListCreateDelViewSet(mixins.CreateModelMixin,
                            mixins.DestroyModelMixin,
                            mixins.ListModelMixin,

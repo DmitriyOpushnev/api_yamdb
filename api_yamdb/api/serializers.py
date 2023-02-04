@@ -20,6 +20,13 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
+
+class TitleGetSerializer(serializers.ModelSerializer):  # похоже так
+    rating = serializers.IntegerField()
+
+    class Meta:
+        read_only_fields = ('rating',)
+
 class AbstractTitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
 
