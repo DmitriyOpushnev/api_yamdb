@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-
-
-from reviews.models import Category, Genre, Title, Review, Comment
-
+from reviews.models import Category, Genre, Title, Review, Comment, User
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -20,6 +17,23 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
+
+class SignUpSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'username')
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=True)
+    confirmation_code = serializers.CharField(
+        required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
 
 class TitleGetSerializer(serializers.ModelSerializer):  # похоже так
     rating = serializers.IntegerField()
