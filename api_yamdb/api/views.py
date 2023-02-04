@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
+from django.db.models import Avg
+from reviews.models import Category, Genre, Review, Title, Comment
 from django_filters.rest_framework import DjangoFilterBackend
-
-
-from reviews.models import Category, Genre, Title
 from api.serializers import (CategorySerializer, GenreSerializer,
-                             ReadTitleSerializer, ReviewSerializer, WriteTitleSerializer)
+                             ReadTitleSerializer, ReviewSerializer, WriteTitleSerializer, CommentSerializers)
+
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -17,6 +17,9 @@ class ListCreateDelViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
+    queryset = Title.objects.annotate(  # не совсем уверен
+        rating=Avg('reviews__score')    # что правильно
+    ).order_by('-id')                   # но
 
 
 class CategoryViewSet(ListCreateDelViewSet):
@@ -28,6 +31,27 @@ class GenreViewSet(ListCreateDelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializers
+    permission_classes = (AllowAny, )  # to be updated
+
+    def get_queryset(self):
+        review = get_object_or_404(
+            Review,
+            pk=self.kwargs.get('review_id'),
+            title_id=self.kwargs.get('title_id')
+        )
+        return review.comments.all()
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(
+            Review,
+            pk=self.kwargs.get('review_id'),
+            title_id=self.kwargs.get('title_id')
+        )
+        serializer.save(author=self.request.user, review=review)
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -56,4 +80,3 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return ReadTitleSerializer
         return WriteTitleSerializer
-
