@@ -1,10 +1,12 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
+
 from reviews.models import Category, Genre, Title
 from api.serializers import (CategorySerializer, GenreSerializer,
-                             ReadTitleSerializer, WriteTitleSerializer)
+                             ReadTitleSerializer, ReviewSerializer, WriteTitleSerializer)
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -27,6 +29,19 @@ class GenreViewSet(ListCreateDelViewSet):
     serializer_class = GenreSerializer
 
 
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = (AllowAny, )  # to be updated Andrey
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return title.reviews.all()
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
+
+
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.select_related('category').\
         prefetch_related('genre')
@@ -41,3 +56,4 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return ReadTitleSerializer
         return WriteTitleSerializer
+

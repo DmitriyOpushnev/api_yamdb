@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from django.utils import timezone
 
-from reviews.models import Category, Genre, Title
+
+from reviews.models import Category, Genre, Title, Review
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,3 +57,17 @@ class WriteTitleSerializer(AbstractTitleSerializer):
 
     def to_representation(self, instance):
         return ReadTitleSerializer(instance).data
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+
+    def validate_rating(self, rating):
+        return rating in range(1, 11)
