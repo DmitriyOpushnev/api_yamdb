@@ -18,7 +18,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('email', 'username')
@@ -35,24 +34,13 @@ class TokenSerializer(serializers.ModelSerializer):
         fields = ('username', 'confirmation_code')
 
 
-class TitleGetSerializer(serializers.ModelSerializer):  # похоже так
-    rating = serializers.IntegerField()
-
-    class Meta:
-        read_only_fields = ('rating',)
-
-
 class AbstractTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
                   'category')
-
-    def get_rating(self, obj):
-        return 9
-
 
 class ReadTitleSerializer(AbstractTitleSerializer):
     category = CategorySerializer()

@@ -15,6 +15,8 @@ from api.serializers import (CategorySerializer, GenreSerializer,
                              SignUpSerializer, TokenSerializer,
                              UsersSerializer)
 from api.permission import AdminPermission, AuthorModeratorAdminPermission
+from api.filters import TitleFilter
+
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -25,9 +27,6 @@ class ListCreateDelViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
-    queryset = Title.objects.annotate(  # не совсем уверен
-        rating=Avg('reviews__score')    # что правильно
-    ).order_by('-id')                   # но
 
 
 class CategoryViewSet(ListCreateDelViewSet):
@@ -128,13 +127,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.select_related('category').\
-        prefetch_related('genre')
-    safe_serializer_class = ReadTitleSerializer
-    unsafe_serializer_class = WriteTitleSerializer
-
+        prefetch_related('genre').annotate(rating=Avg('reviews__score'))
     permission_classes = (AdminPermission, )  # to be updated
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -148,3 +143,4 @@ class UsersViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+
