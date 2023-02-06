@@ -1,7 +1,9 @@
 import csv
-from django.core.management.base import BaseCommand
 from pathlib import Path
-from reviews.models import Category, Genre, Title, User, Review, Comment
+
+from django.core.management.base import BaseCommand
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class Command(BaseCommand):

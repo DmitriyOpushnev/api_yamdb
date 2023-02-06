@@ -1,20 +1,7 @@
-from rest_framework import serializers
 from django.utils import timezone
-from reviews.models import Category, Genre, Title, Review, Comment, User
+from rest_framework import serializers
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ('name', 'slug')
-        lookup_field = 'slug'
-
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = ('name', 'slug')
-        lookup_field = 'slug'
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -34,6 +21,20 @@ class TokenSerializer(serializers.ModelSerializer):
         fields = ('username', 'confirmation_code')
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
+        lookup_field = 'slug'
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ('name', 'slug')
+        lookup_field = 'slug'
+
+
 class AbstractTitleSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(read_only=True)
 
@@ -41,6 +42,7 @@ class AbstractTitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
                   'category')
+
 
 class ReadTitleSerializer(AbstractTitleSerializer):
     category = CategorySerializer()
@@ -100,3 +102,14 @@ class UsersSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
         lookup_field = 'username'
+
+
+class UserMeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        lookup_field = 'username'
+        read_only_fields = ('role',)
