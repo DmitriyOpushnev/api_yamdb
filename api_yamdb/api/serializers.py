@@ -42,7 +42,6 @@ class AbstractTitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
                   'category')
 
-
 class ReadTitleSerializer(AbstractTitleSerializer):
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
@@ -91,3 +90,13 @@ class CommentSerializers(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
         read_only_fields = ('author', )
+
+
+class UsersSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        lookup_field = 'username'
