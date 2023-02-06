@@ -29,8 +29,7 @@ class Command(BaseCommand):
                     args = dict(**row)
                     if replace:
                         for old, new in replace.items():
-                            args[new] = row[old]
-                            args.pop(old)
+                            args[new] = args.pop(old)
                     objects_to_create.append(model(**args))
                 model.objects.bulk_create(objects_to_create,
                                           ignore_conflicts=True)
