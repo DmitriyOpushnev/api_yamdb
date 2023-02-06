@@ -7,11 +7,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
-from reviews.models import Category, Genre, Review, Title, Comment, User
-from django_filters.rest_framework import DjangoFilterBackend
+from reviews.models import Category, Genre, Review, Title, User
 from api.serializers import (CategorySerializer, GenreSerializer,
-                             ReadTitleSerializer, ReviewSerializer, WriteTitleSerializer, CommentSerializers, SignUpSerializer, TokenSerializer)
-
+                             ReadTitleSerializer, ReviewSerializer,
+                             WriteTitleSerializer, CommentSerializers,
+                             SignUpSerializer, TokenSerializer)
+from api.filters import TitleFilter
 
 
 class ListCreateDelViewSet(mixins.CreateModelMixin,
@@ -22,9 +23,6 @@ class ListCreateDelViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
-    queryset = Title.objects.annotate(  # не совсем уверен
-        rating=Avg('reviews__score')    # что правильно
-    ).order_by('-id')                   # но
 
 
 class CategoryViewSet(ListCreateDelViewSet):
@@ -88,6 +86,7 @@ class APIToken(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializers
     permission_classes = (AllowAny, )  # to be updated
@@ -108,6 +107,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
         serializer.save(author=self.request.user, review=review)
 
+
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (AllowAny, )  # to be updated Andrey
@@ -123,16 +123,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.select_related('category').\
-        prefetch_related('genre')
-    safe_serializer_class = ReadTitleSerializer
-    unsafe_serializer_class = WriteTitleSerializer
-
+        prefetch_related('genre').annotate(rating=Avg('reviews__score'))
     permission_classes = (AllowAny, )  # to be updated
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return ReadTitleSerializer
         return WriteTitleSerializer
-
