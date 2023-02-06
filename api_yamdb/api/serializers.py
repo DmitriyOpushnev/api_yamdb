@@ -17,7 +17,6 @@ class GenreSerializer(serializers.ModelSerializer):
         lookup_field = 'slug'
 
 
-
 class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -35,11 +34,13 @@ class TokenSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'confirmation_code')
 
+
 class TitleGetSerializer(serializers.ModelSerializer):  # похоже так
     rating = serializers.IntegerField()
 
     class Meta:
         read_only_fields = ('rating',)
+
 
 class AbstractTitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
@@ -50,7 +51,7 @@ class AbstractTitleSerializer(serializers.ModelSerializer):
                   'category')
 
     def get_rating(self, obj):
-        return 9          #  ждем модель Review
+        return 9
 
 
 class ReadTitleSerializer(AbstractTitleSerializer):
@@ -67,9 +68,6 @@ class WriteTitleSerializer(AbstractTitleSerializer):
     )
 
     def validate(self, data):
-        # тут было только условие на >, но в pytest падает 1 тест при патч-запросе, где None (нет года в data) нельзя сравнить с int (год)
-        # при добавлении условия на наличие year ошибка ушла, но падают другие тесты с рейтингом; при тестах через postman все работает нормально без доп.условия 
-        # доведу до рабочего состояния, когда будут рейтинги
         if data.get('year') and data.get('year') > timezone.now().year:
             raise serializers.ValidationError(
                 'Год выпуска произведения не может быть больше текущего.'
@@ -85,21 +83,32 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault()
     )
+
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
     def validate_rating(self, rating):
-        return rating in range(1, 11)    
-  
-  
+        return rating in range(1, 11)
+
+
 class CommentSerializers(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault()
     )
+
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
         read_only_fields = ('author', )
 
+
+class UsersSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
+        lookup_field = 'username'
