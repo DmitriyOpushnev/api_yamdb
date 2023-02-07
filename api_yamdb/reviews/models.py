@@ -94,25 +94,36 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    text = models.TextField(verbose_name='text')
+    text = models.TextField(verbose_name='Текст')
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        verbose_name='title',
+        verbose_name='Отзыв',
         related_name='reviews'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name='author'
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='Пользователь',
+        related_name='reviews'
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        verbose_name='score'
+        verbose_name='Рейтинг'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата публикации отзыва'
     )
 
+    class Meta:
+        """Meta модели Reviews.
+           Содержит ограничения """
+        constraints = [
+            models.UniqueConstraint(fields=['author', 'title'],
+                                    name='unique_author_title')
+        ]
+    
     def __str__(self):
         return self.text
 
