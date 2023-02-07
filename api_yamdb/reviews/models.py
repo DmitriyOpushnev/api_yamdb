@@ -98,12 +98,12 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        verbose_name='Отзыв',
+        verbose_name='Произведение',
         related_name='reviews'
     )
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         verbose_name='Пользователь',
         related_name='reviews'
     )
@@ -117,13 +117,11 @@ class Review(models.Model):
     )
 
     class Meta:
-        """Meta модели Reviews.
-           Содержит ограничения """
         constraints = [
             models.UniqueConstraint(fields=['author', 'title'],
                                     name='unique_author_title')
         ]
-    
+
     def __str__(self):
         return self.text
 
@@ -133,17 +131,17 @@ class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        verbose_name='review',
+        verbose_name='Комментарии',
         related_name='comments'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='author',
+        verbose_name='Автор комментария',
         related_name='comments',
         null=True
     )
     pub_date = models.DateTimeField(
-        verbose_name='Дата публикации отзыва',
+        verbose_name='Дата публикации комментария',
         auto_now_add=True,
     )
