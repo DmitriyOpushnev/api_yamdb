@@ -2,7 +2,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -17,6 +17,7 @@ from api.serializers import (CategorySerializer, CommentSerializers,
                              ReviewSerializer, SignUpSerializer,
                              TokenSerializer, UserMeSerializer,
                              UsersSerializer, WriteTitleSerializer)
+from api.viewsets import ListCreateDelViewSet
 from reviews.models import Category, Genre, Review, Title, User
 
 
@@ -70,16 +71,6 @@ class APIToken(APIView):
             {'error': 'Неверный код подтверждения.'},
             status=status.HTTP_400_BAD_REQUEST
         )
-
-
-class ListCreateDelViewSet(mixins.CreateModelMixin,
-                           mixins.DestroyModelMixin,
-                           mixins.ListModelMixin,
-                           viewsets.GenericViewSet):
-    permission_classes = (AdminAnonPermission,)
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('=name',)
 
 
 class CategoryViewSet(ListCreateDelViewSet):
