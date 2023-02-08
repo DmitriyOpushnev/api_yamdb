@@ -13,6 +13,7 @@ class AdminAnonPermission(permissions.BasePermission):
 
 
 class AdminOnlyPermission(permissions.BasePermission):
+
     def has_permission(self, request, view):
         return (
             (request.user.role == 'admin')
@@ -26,7 +27,7 @@ class AuthorModeratorAdminPermission(permissions.IsAuthenticatedOrReadOnly):
         if request.user.is_authenticated is False:
             return request.method in permissions.SAFE_METHODS
         return (
-            request.user.role in ['moderator', 'admin']
+            request.user.role in ('moderator', 'admin',)
             or request.user.is_staff
             or request.user == obj.author
         )
