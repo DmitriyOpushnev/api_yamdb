@@ -4,12 +4,9 @@ from rest_framework import permissions
 class AdminAnonPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.is_authenticated is False:
-            return request.method in permissions.SAFE_METHODS
-        return (
-            (request.user.role == 'admin')
-            or request.user.is_staff
-        )
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated
+                and (request.user.role == 'admin' or request.user.is_staff))
 
 
 class AdminOnlyPermission(permissions.BasePermission):

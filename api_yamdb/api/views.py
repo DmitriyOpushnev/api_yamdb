@@ -152,9 +152,9 @@ class UsersViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @action(
-            methods=['get', 'patch'], detail=False,
-            url_path='me', permission_classes=(IsAuthenticated,)
-        )
+        methods=['get', 'patch'], detail=False,
+        url_path='me', permission_classes=(IsAuthenticated,)
+    )
     def get_users_info(self, request):
         serializer = UsersSerializer(request.user)
         if request.method == 'PATCH':
@@ -168,5 +168,4 @@ class UsersViewSet(viewsets.ModelViewSet):
                 )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)

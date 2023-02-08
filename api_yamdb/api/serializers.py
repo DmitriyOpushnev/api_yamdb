@@ -66,26 +66,19 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
-
     )
 
     class Meta:
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
-    def validate_rating(self, rating):
-        return rating in range(1, 11)
-
     def validate(self, data):
         request = self.context['request']
         title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
-        # тут можно упростить несколько строк
-        if request.method != 'POST':
-            return data
-        if Review.objects.filter(
-                author=request.user,
-                title=title).exists():
+        if (request.method == 'POST' and Review.objects.filter(
+                    author=request.user, title=title
+                ).exists()):
             raise ValidationError(
                 'Нельзя сделать 2 отзыва на одно произведение!'
             )
