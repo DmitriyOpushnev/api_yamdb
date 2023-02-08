@@ -77,7 +77,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         if (request.method == 'POST' and Review.objects.filter(
-            author=request.user, title=title).exists()):
+                author=request.user, title=title).exists()):
             raise ValidationError(
                 'Нельзя сделать 2 отзыва на одно произведение!'
             )
