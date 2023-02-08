@@ -59,13 +59,6 @@ class WriteTitleSerializer(AbstractTitleSerializer):
         slug_field='slug', queryset=Category.objects.all()
     )
 
-    def validate(self, data):
-        if data.get('year') and data.get('year') > timezone.now().year:
-            raise ValidationError(
-                'Год выпуска произведения не может быть больше текущего.'
-            )
-        return data
-
     def to_representation(self, instance):
         return ReadTitleSerializer(instance).data
 
@@ -88,6 +81,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context['request']
         title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
+        # тут можно упростить несколько строк
         if request.method != 'POST':
             return data
         if Review.objects.filter(
@@ -96,7 +90,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 'Нельзя сделать 2 отзыва на одно произведение!'
             )
-
         return data
 
 

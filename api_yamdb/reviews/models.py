@@ -3,7 +3,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.validators import validate_correct_username
+from reviews.validators import validate_correct_username, validate_year
 
 USER_ROLES = (
     ('user', 'user'),
@@ -80,7 +80,8 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(verbose_name='Название', max_length=256)
-    year = models.IntegerField(verbose_name='Год выпуска')
+    year = models.IntegerField(verbose_name='Год выпуска',
+                               validators=[validate_year])
     description = models.TextField(
         verbose_name='Описание', blank=True, null=True
     )
