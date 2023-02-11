@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
@@ -19,7 +20,7 @@ from api.serializers import (CategorySerializer, CommentSerializers,
                              TokenSerializer, UserMeSerializer,
                              UsersSerializer, WriteTitleSerializer)
 from api.viewsets import ListCreateDelViewSet
-from reviews.models import Category, Genre, Review, Title, User
+from reviews.models import Category, Genre, Review, Title, User, ADMIN
 
 
 class APISignup(APIView):
@@ -29,16 +30,18 @@ class APISignup(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        if User.objects.filter(
-            username=data['username'],
-            email=data['email']
-        ).exists():
-            return Response(request.data, status=status.HTTP_200_OK)
-        serializer.save()
-        user = User.objects.get(username=data['username'])
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        try:
+            user, _ = User.objects.get_or_create(
+                username=username, email=email
+            )
+        except IntegrityError:
+            return Response(
+                'Проблемы с базой данных.',
+                status=status.HTTP_400_BAD_REQUEST
+            )
         confirmation_code = default_token_generator.make_token(user)
-        user.save()
         send_mail(
             subject='API YaMDB!',
             message=(
@@ -68,7 +71,7 @@ class APIToken(APIView):
             )
         if default_token_generator.check_token(
             user, request.data['confirmation_code']
-        ) is True:
+        ):
             token = str(RefreshToken.for_user(user).access_token)
             return Response({'token': token}, status=status.HTTP_201_CREATED)
         return Response(
@@ -153,7 +156,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     def get_users_info(self, request):
         serializer = UsersSerializer(request.user)
         if request.method == 'PATCH':
-            if request.user.role == 'admin':
+            if request.user.role == ADMIN:
                 serializer = UsersSerializer(
                     request.user, data=request.data, partial=True
                 )

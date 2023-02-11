@@ -3,11 +3,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
+from reviews.validators import validate_correct_username, validate_username
 
 
 class SignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        max_length=150,
+        required=True,
+        validators=[validate_correct_username, validate_username]
+    )
+    email = serializers.EmailField(
+        required=True,
+        max_length=254
+    )
+
     class Meta:
         model = User
+        lookup_field = 'username'
         fields = ('email', 'username')
 
 

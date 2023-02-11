@@ -1,9 +1,9 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.validators import validate_correct_username, validate_year
+from reviews.validators import (validate_correct_username, validate_username,
+                                validate_year)
 
 USER = 'user'
 MODERATOR = 'moderator'
@@ -15,8 +15,6 @@ USER_ROLES = (
     (MODERATOR, MODERATOR),
     (ADMIN, ADMIN),
 )
-
-validate_username = UnicodeUsernameValidator()
 
 
 class User(AbstractUser):
@@ -57,6 +55,11 @@ class User(AbstractUser):
         blank=True
     )
 
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+        ordering = ('id',)
+
     def __str__(self):
         return self.username
 
@@ -65,6 +68,11 @@ class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
 
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ('name',)
+
     def __str__(self):
         return self.slug
 
@@ -72,6 +80,11 @@ class Category(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "Жанр"
+        verbose_name_plural = "Жанры"
+        ordering = ('name',)
 
     def __str__(self):
         return self.slug
@@ -91,6 +104,9 @@ class Title(models.Model):
 
     class Meta:
         default_related_name = 'titles'
+        verbose_name = "Название"
+        verbose_name_plural = "Названия"
+        ordering = ('category',)
 
     def __str__(self):
         return self.name
@@ -127,9 +143,12 @@ class Review(models.Model):
             models.UniqueConstraint(fields=['author', 'title'],
                                     name='unique_author_title')
         ]
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+        ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text
+        return f'Отзыв {self.author.username} на {self.title.name}'
 
 
 class Comment(models.Model):
@@ -151,6 +170,11 @@ class Comment(models.Model):
         verbose_name='Дата публикации комментария',
         auto_now_add=True,
     )
+
+    class Meta:
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.text

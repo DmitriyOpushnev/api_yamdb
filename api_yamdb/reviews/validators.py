@@ -1,9 +1,10 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
 def validate_correct_username(data):
-    if data in ('me', 'ME', 'mE', 'Me'):
+    if data.lower() == 'me':
         raise ValidationError(
             f'Никнэйм пользователя не должен быть {data}'
         )
@@ -14,3 +15,6 @@ def validate_year(data):
         raise ValidationError(
             'Год выпуска произведения не может быть больше текущего.'
         )
+
+
+validate_username = UnicodeUsernameValidator()
