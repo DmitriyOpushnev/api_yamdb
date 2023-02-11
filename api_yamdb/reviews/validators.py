@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 def validate_correct_username(data):
-    if data == 'me':
+    if data in ('me', 'ME', 'mE', 'Me'):
         raise ValidationError(
             f'Никнэйм пользователя не должен быть {data}'
         )

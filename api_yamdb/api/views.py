@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
@@ -27,24 +28,25 @@ class APISignup(APIView):
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
         if User.objects.filter(
-            username=request.data.get('username'),
-            email=request.data.get('email')
+            username=data['username'],
+            email=data['email']
         ).exists():
             return Response(request.data, status=status.HTTP_200_OK)
-        serializer.is_valid(raise_exception=True)
         serializer.save()
-        user = User.objects.get(username=request.data['username'])
-        user.confirmation_code = default_token_generator.make_token(user)
+        user = User.objects.get(username=data['username'])
+        confirmation_code = default_token_generator.make_token(user)
         user.save()
         send_mail(
             subject='API YaMDB!',
             message=(
                 f'Добро пожаловать на сервис YaMDB, {user.username}!'
                 f'\nДля дальнейшей работы с API используйте код подтверждения.'
-                f'\nВаш код подтверждения - {user.confirmation_code}'
+                f'\nВаш код подтверждения - {confirmation_code}'
             ),
-            from_email='api@yamdb.ru',
+            from_email=settings.EMAIL_SENDER,
             recipient_list=[user.email],
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -64,7 +66,9 @@ class APIToken(APIView):
                 {'error': 'Пользователя не существует.'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        if request.data['confirmation_code'] == user.confirmation_code:
+        if default_token_generator.check_token(
+            user, request.data['confirmation_code']
+        ) is True:
             token = str(RefreshToken.for_user(user).access_token)
             return Response({'token': token}, status=status.HTTP_201_CREATED)
         return Response(

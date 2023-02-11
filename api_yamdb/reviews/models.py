@@ -5,10 +5,15 @@ from django.db import models
 
 from reviews.validators import validate_correct_username, validate_year
 
+USER = 'user'
+MODERATOR = 'moderator'
+ADMIN = 'admin'
+
+
 USER_ROLES = (
-    ('user', 'user'),
-    ('moderator', 'moderator'),
-    ('admin', 'admin'),
+    (USER, USER),
+    (MODERATOR, MODERATOR),
+    (ADMIN, ADMIN),
 )
 
 validate_username = UnicodeUsernameValidator()
@@ -51,12 +56,6 @@ class User(AbstractUser):
         verbose_name='Биография пользователя',
         blank=True
     )
-    confirmation_code = models.CharField(
-        verbose_name='Код подтверждения',
-        max_length=255,
-        null=True,
-        blank=False
-    )
 
     def __str__(self):
         return self.username
@@ -93,6 +92,9 @@ class Title(models.Model):
     class Meta:
         default_related_name = 'titles'
 
+    def __str__(self):
+        return self.name
+
 
 class Review(models.Model):
     text = models.TextField(verbose_name='Текст')
@@ -110,7 +112,10 @@ class Review(models.Model):
     )
     score = models.PositiveSmallIntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[
+            MinValueValidator(1, 'Значение рейтинга не может быть ниже 1.'),
+            MaxValueValidator(10, 'Значение рейтинга не может быть выше 10.')
+        ],
         verbose_name='Рейтинг'
     )
     pub_date = models.DateTimeField(
@@ -146,3 +151,6 @@ class Comment(models.Model):
         verbose_name='Дата публикации комментария',
         auto_now_add=True,
     )
+
+    def __str__(self):
+        return self.text
