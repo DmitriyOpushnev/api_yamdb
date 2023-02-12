@@ -62,15 +62,17 @@ class APIToken(APIView):
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        confirmation_code = serializer.validated_data.get('confirmation_code')
         try:
-            user = User.objects.get(username=request.data['username'])
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response(
                 {'error': 'Пользователя не существует.'},
                 status=status.HTTP_404_NOT_FOUND
             )
         if default_token_generator.check_token(
-            user, request.data['confirmation_code']
+            user, confirmation_code
         ):
             token = str(RefreshToken.for_user(user).access_token)
             return Response({'token': token}, status=status.HTTP_201_CREATED)

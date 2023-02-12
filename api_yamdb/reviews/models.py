@@ -56,8 +56,8 @@ class User(AbstractUser):
     )
 
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
         ordering = ('id',)
 
     def __str__(self):
@@ -69,8 +69,8 @@ class Category(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
         ordering = ('name',)
 
     def __str__(self):
@@ -82,8 +82,8 @@ class Genre(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name = "Жанр"
-        verbose_name_plural = "Жанры"
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
         ordering = ('name',)
 
     def __str__(self):
@@ -104,8 +104,8 @@ class Title(models.Model):
 
     class Meta:
         default_related_name = 'titles'
-        verbose_name = "Название"
-        verbose_name_plural = "Названия"
+        verbose_name = 'Название'
+        verbose_name_plural = 'Названия'
         ordering = ('category',)
 
     def __str__(self):
@@ -143,8 +143,8 @@ class Review(models.Model):
             models.UniqueConstraint(fields=['author', 'title'],
                                     name='unique_author_title')
         ]
-        verbose_name = "Отзыв"
-        verbose_name_plural = "Отзывы"
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
         ordering = ('-pub_date',)
 
     def __str__(self):
@@ -172,8 +172,8 @@ class Comment(models.Model):
     )
 
     class Meta:
-        verbose_name = "Комментарий"
-        verbose_name_plural = "Комментарии"
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
         ordering = ('-pub_date',)
 
     def __str__(self):
